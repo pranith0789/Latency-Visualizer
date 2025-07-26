@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Color, Scene, Fog, PerspectiveCamera, Vector3 } from "three";
+import { Color, Scene, Fog, PerspectiveCamera, Vector3,} from "three";
 import ThreeGlobe from "three-globe";
 import { useThree, Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Group } from "three";
 import countries from "@/app/data/globe.json";
+import * as THREE from 'three'
 declare module "@react-three/fiber" {
   interface ThreeElements {
     threeGlobe: ThreeElements["mesh"] & {
@@ -13,7 +14,6 @@ declare module "@react-three/fiber" {
     };
   }
 }
-
 
 extend({ ThreeGlobe: ThreeGlobe });
 
@@ -25,9 +25,9 @@ export type Position = {
   order: number;
   startLat: number;
   startLng: number;
-//   endLat: number;
-//   endLng: number;
-//   arcAlt: number;
+  endLat: number;
+  endLng: number;
+  arcAlt: number;
   color: string;
 };
 
@@ -70,7 +70,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   const defaultProps = {
-    pointSize: 1,
+    pointSize: 0.25,
     atmosphereColor: "#ffffff",
     showAtmosphere: true,
     atmosphereAltitude: 0.1,
@@ -79,8 +79,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
     emissive: "#000000",
     emissiveIntensity: 0.1,
     shininess: 0.9,
-    arcTime: 2000,
-    arcLength: 0.9,
+    arcTime: 3000,
+    arcLength: 0.5,
     rings: 1,
     maxRings: 3,
     ...globeConfig,
@@ -94,6 +94,17 @@ export function Globe({ globeConfig, data }: WorldProps) {
       setIsInitialized(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!globeRef.current) return;
+  
+    const material = globeRef.current.globeMaterial() as THREE.MeshPhongMaterial;
+    if (material) {
+      material.color = new THREE.Color(globeConfig.globeColor);
+    }
+  }, [globeConfig.globeColor]);
+  
+  
   
 
   // Build material when globe is initialized or when relevant props change
@@ -138,8 +149,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
         size: defaultProps.pointSize,
         order: arc.order,
         color: arc.color,
-        // lat: arc.endLat,
-        // lng: arc.endLng,
+        lat: arc.endLat,
+        lng: arc.endLng,
       });
     }
 
@@ -182,7 +193,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
       .pointColor((e) => (e as { color: string }).color)
       .pointsMerge(true)
       .pointAltitude(0.0)
-      .pointRadius(2);
+      .pointRadius(1);
 
     globeRef.current
       .ringsData([])
