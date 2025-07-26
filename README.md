@@ -19,7 +19,7 @@ The **Latency Topology Visualizer** is an interactive web application that displ
 ### 1. Clone the Repository
 
 
-git clone https://github.com/your-username/latency-topology-visualizer.git
+git clone [https://github.com/pranith0789/Latency-Visualizer.git)]
 cd latency-topology-visualizer
 2. Install Dependencies
 npm install
